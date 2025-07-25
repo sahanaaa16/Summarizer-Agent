@@ -1,7 +1,0 @@
-litellm
-google-adk
-openai
-python-docx
-PyPDF2
-python-pptx>=0.6.21
-openpyxl>=3.1.0
