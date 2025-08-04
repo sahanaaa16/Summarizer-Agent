@@ -1,11 +1,10 @@
+
 import os 
 #from openai import OpenAI
 from dotenv import load_dotenv
 from docx import Document
 from PyPDF2 import PdfReader
-from openpyxl import load_workbook
 from google.adk.agents import Agent
-from pptx import Presentation
 from google.adk.tools import FunctionTool 
 from google.adk.models.lite_llm import LiteLlm
 
@@ -13,6 +12,7 @@ load_dotenv()
 
 #client = OpenAI(api_key=os.getenv("OPENAI_API_KEY")) 
 #print(client.models.list())
+
 
 def summarize_uploaded_files(filepaths: list[str]) -> str:
     """
@@ -33,24 +33,6 @@ def summarize_uploaded_files(filepaths: list[str]) -> str:
         elif filename.endswith(".docx"):
             doc = Document(filepath)
             text = "\n".join([para.text for para in doc.paragraphs])
-
-        
-        elif filename.endswith(".xlsx"):
-            workbook = load_workbook(filename=filepath, data_only=True)
-            text = ""
-            for sheet in workbook.worksheets:
-                for row in sheet.iter_rows(values_only=True):
-                    row_text = " ".join([str(cell) if cell is not None else "" for cell in row])
-                    text += row_text + "\n"
-
-        elif filename.endswith(".pptx"):
-            prs = Presentation(filepath)
-            text = ""
-            for slide in prs.slides:
-                for shape in slide.shapes:
-                    if hasattr(shape, "text"):
-                        text += shape.text + "\n"
-
         else:
             text = f"Unsupported file type: {filename}"
         output += f"\n\n{filename}\n{text}\n"
@@ -58,6 +40,7 @@ def summarize_uploaded_files(filepaths: list[str]) -> str:
     return output.strip()
 
 summarizing_tool = FunctionTool(func=summarize_uploaded_files)
+
 
 root_agent = Agent(
     name="summarizing_agent",
